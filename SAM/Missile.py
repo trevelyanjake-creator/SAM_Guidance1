@@ -12,7 +12,7 @@ class Missile:
         self.MissilesInRange = []
 
         self.Missile_Xscatter = np.random.default_rng().uniform(low = 100, high = 400)
-        self.Missile_Yscatter = np.random.default_rng().uniform(low = 100, high = 850)
+        self.Missile_Yscatter = np.random.default_rng().uniform(low = 100, high = 800)
         self.Missile_Zscatter = 0
 
         self.Missile_state = np.array([self.Missile_Xscatter, self.Missile_Yscatter, self.Missile_Zscatter], dtype=float)
@@ -36,30 +36,27 @@ class Missile:
         self.activated = True
         self.LNP = target_state
 
-        Missile_VXscatter = 0
-        Missile_VYscatter = 0
-        Missile_VZscatter = 35
+        Missile_VX = 0
+        Missile_VY = 0
+        Missile_VZ = 35
 
-        self.Missile_Vstate = np.array([Missile_VXscatter, Missile_VYscatter, Missile_VZscatter], dtype=float)
+        self.Missile_Vstate = np.array([Missile_VX, Missile_VY, Missile_VZ], dtype=float)
     
     def catch(self, target):
-        if self.target is not None and self.target.Pursuer == self:
-            self.target.Pursuer = None
         self.target = target
         if target.Pursuer is None:
             target.Pursuer = self
             self.isPrimaryPursuer = True
-        else:
-            self.isPrimaryPursuer = False
     
     def Guidance(self, dt):
         if self.target is not None:
             if self.target.contact == True:
+                self.target.Puruser = None
                 self.LNP = self.target.Target_state.copy()
                 self.isPrimaryPursuer = False
                 self.target = None
 
-        if self.target != None:           
+        if self.target is not None:           
             R = self.target.Target_state - self.Missile_state
 
             if np.dot(R, R) < 5**2:
@@ -70,8 +67,7 @@ class Missile:
                 self.isPrimaryPursuer = False
                 return
 
-
-            if np.linalg.norm(self.target.Target_state - self.Missile_state) > 150:
+            if np.linalg.norm(R) > 150:
                 errorX = self.target.Target_state[0] - self.Missile_state[0]
                 errorY = self.target.Target_state[1] - self.Missile_state[1]
                 errorZ = self.target.Target_state[2] - self.Missile_state[2]
@@ -103,7 +99,7 @@ class Missile:
             self.Missile_Vstate[2] += errorZ * dt
         
         v_norm = np.linalg.norm(self.Missile_Vstate)
-        v_max = 45
+        v_max = 40
         if v_norm > v_max and v_norm > 0:
             self.Missile_Vstate *= v_max / v_norm
         
@@ -112,4 +108,3 @@ class Missile:
         self.Missile_Path[0].append(self.Missile_state[0])
         self.Missile_Path[1].append(self.Missile_state[1])
         self.Missile_Path[2].append(self.Missile_state[2])
-    
