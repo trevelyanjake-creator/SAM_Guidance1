@@ -2,12 +2,12 @@
 
 import DP2_SAMPlotter
 
-NumMissiles = 8
+NumMissiles = 12
 NumMissilesLinear = 0
 NumTargets = 8
 N = 17
 Debug = False
-Evade = True
+Evade = False
 EvasionMethod = "Stall" # Options are Stall and Spiral (Spiral is not compatible with Horizontal)
 TargetPhase = "Vertical" # Options are Vertical and Horizontal
 _2D = False
